@@ -1,0 +1,86 @@
+---
+title: "MRC"
+subtitle: "Fun with Fran"
+author: "Francisco Orejarena"
+date: "2018/2/27"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r, load_libraries, message=FALSE, warning=FALSE}
+library(untidydata)
+library(xaringan)
+library(plot3D)
+library(tidyverse)
+```
+
+```{r, explore}
+str(language_diversity)
+```
+
+hello
+
+---
+
+#My header
+
+hello again
+
+---
+
+#Tidy
+```{r, tidy_data}
+ld <- language_diversity
+
+nld <- ld %>%
+  filter(., Continent == 'Africa') %>%
+  spread(., Measurement, Value) %>%
+  select(., country = Country, 
+            pop = Population, 
+            area = Area, 
+            lang = Langs) %>%
+  mutate(., logArea = log(area), 
+            logPop = log(pop))
+  
+```
+
+---
+
+#Plots
+```{r, plot, fig.width=12, fig.height=6}
+nld %>%
+  ggplot(., aes(x = logPop, y = lang, color = logArea)) +
+  geom_point()
+```
+
+---
+
+#Models
+```{r, model}
+my_mod <- lm(lang ~ logPop + logArea, data = nld)
+summary(my_mod)$coef
+```
+
+---
+
+#3D
+```{r, 3D, echo=FALSE}
+library(plot3D)
+
+x <- nld$logArea
+y <- nld$logPop
+z <- nld$lang
+
+scatter3D(x, y, z)
+```
+
+  
